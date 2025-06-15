@@ -14,9 +14,6 @@ GUILD_ID = 1380979689375535235
 intents = discord.Intents.default()
 client = commands.Bot(command_prefix="!", intents=intents)
 
-PRIORITY_LEVELS = ["lowest", "low", "high", "highest"]
-LOCATION_OPTIONS = ["Backlog", "Current Sprint"]
-
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user} (ID: {client.user.id})')
@@ -26,53 +23,62 @@ async def on_ready():
     except Exception as e:
         print(e)
 
-@client.tree.command(name="ticket-request", description="Submit a structured ticket request", guild=discord.Object(id=GUILD_ID))
+@client.tree.command(
+    name="ticket-request",
+    description="Submit a structured ticket request",
+    guild=discord.Object(id=GUILD_ID)
+)
 @app_commands.describe(
     assignee="Tag a user to assign",
     description="Short description of the task",
-    priority="Priority level (lowest, low, high, highest)",
-    story_point_estimate="Estimated story points (decimals allowed, must be > 0)",
+    story_point_estimate="Estimated story points (must be > 0)",
     epic="(Optional) Epic ticket ID (e.g. PSB-57)",
+    priority="Select a priority level",
     location="Where should this ticket go?"
 )
-@app_commands.choices(location=[
-    app_commands.Choice(name="Backlog", value="Backlog"),
-    app_commands.Choice(name="Current Sprint", value="Current Sprint")
-])
+@app_commands.choices(
+    priority=[
+        app_commands.Choice(name="Lowest", value="lowest"),
+        app_commands.Choice(name="Low", value="low"),
+        app_commands.Choice(name="Medium", value="medium"),
+        app_commands.Choice(name="High", value="high"),
+        app_commands.Choice(name="Highest", value="highest"),
+    ],
+    location=[
+        app_commands.Choice(name="Backlog", value="Backlog"),
+        app_commands.Choice(name="Current Sprint", value="Current Sprint"),
+    ]
+)
 async def ticket_request(
     interaction: discord.Interaction,
     assignee: discord.Member,
     description: str,
-    priority: str,
     story_point_estimate: float,
+    priority: app_commands.Choice[str],
     location: app_commands.Choice[str],
     epic: str = None  # Optional
 ):
-    priority = priority.lower()
-    if priority not in PRIORITY_LEVELS:
-        await interaction.response.send_message(
-            f"❌ Invalid priority '{priority}'. Please use one of: {', '.join(PRIORITY_LEVELS)}", ephemeral=True
-        )
-        return
-
+    # Validate story point
     if story_point_estimate <= 0:
         await interaction.response.send_message(
             "❌ Story point estimate must be greater than 0.", ephemeral=True
         )
         return
 
+    # Validate epic format (if provided)
     if epic and not re.fullmatch(r"[A-Z]{2,10}-\d+", epic):
         await interaction.response.send_message(
             "❌ Epic format must be like PSB-57 (uppercase letters, dash, number).", ephemeral=True
         )
         return
 
+    # Build embedded ticket summary
     embed = discord.Embed(
         title="📝 New Ticket Request",
         color=discord.Color.blue()
     )
     embed.add_field(name="Assignee", value=assignee.mention, inline=False)
-    embed.add_field(name="Priority", value=priority, inline=False)
+    embed.add_field(name="Priority", value=priority.value, inline=False)
     embed.add_field(name="Description", value=description, inline=False)
     embed.add_field(name="Story Points", value=str(story_point_estimate), inline=False)
     embed.add_field(name="Location", value=location.value, inline=False)
