@@ -30,19 +30,19 @@ async def on_ready():
 )
 @app_commands.describe(
     assignee="Tag a user to assign",
-    description="Short description of the task",
+    description="2+ sentence description of the task, the more detail the better",
     story_point_estimate="Estimated story points (must be > 0)",
-    epic="(Optional) Epic ticket ID (e.g. PSB-57)",
+    epic="(Optional) Epic/Parent ticket ID (e.g. PSB-57)",
     priority="Select a priority level",
     location="Where should this ticket go?"
 )
 @app_commands.choices(
     priority=[
-        app_commands.Choice(name="Lowest", value="lowest"),
-        app_commands.Choice(name="Low", value="low"),
-        app_commands.Choice(name="Medium", value="medium"),
-        app_commands.Choice(name="High", value="high"),
         app_commands.Choice(name="Highest", value="highest"),
+        app_commands.Choice(name="High", value="high"),
+        app_commands.Choice(name="Medium", value="medium"),
+        app_commands.Choice(name="Low", value="low"),
+        app_commands.Choice(name="Lowest", value="lowest"),
     ],
     location=[
         app_commands.Choice(name="Backlog", value="Backlog"),
