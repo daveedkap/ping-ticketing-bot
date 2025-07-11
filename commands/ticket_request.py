@@ -1,4 +1,5 @@
 import re
+import os
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -85,7 +86,7 @@ class TicketRequest(commands.Cog):
         await interaction.followup.send(embed=embed) 
 
     async def cog_load(self):
-        GUILD_ID = 1380979689375535235
+        GUILD_ID = int(os.getenv("GUILD_ID"))
         print("📦 Registering /ticket-request to GUILD_ID:", GUILD_ID)
         self.bot.tree.add_command(self.ticket_request, guild=discord.Object(id=GUILD_ID))
 
