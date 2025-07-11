@@ -90,6 +90,7 @@ class TicketRequest(commands.Cog):
 
         work_type_value = work_type.value if work_type else "Task"
 
+        # EMBED CONSTRUCTION
         embed = discord.Embed(
             title="📝 New Ticket Request",
             color=discord.Color.blue()

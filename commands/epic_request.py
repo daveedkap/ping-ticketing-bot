@@ -6,6 +6,10 @@ from discord.ext import commands
 class EpicRequest(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.MODE = os.getenv("MODE")
+        self.GUILD_ID = int(os.getenv("GUILD_ID"))
+        self.TEST_CHANNEL_ID = int(os.getenv("TEST_CHANNEL_ID"))
+        self.PROD_CHANNEL_ID = int(os.getenv("PROD_CHANNEL_ID"))
 
     @app_commands.command(
         name="epic-request",
@@ -27,6 +31,28 @@ class EpicRequest(commands.Cog):
     ):
         await interaction.response.defer()
 
+        # CHANNEL RESTRICTION LOGIC
+        if self.MODE == "test":
+            if interaction.channel_id != self.TEST_CHANNEL_ID:
+                if interaction.channel_id == self.PROD_CHANNEL_ID:
+                    await interaction.followup.send(
+                        "⚠️ This is the **staging bot** for development only.\nPlease use the official `ping-ticketing-bot` for real ticket submissions in this channel.",
+                        ephemeral=True
+                    )
+                else:
+                    await interaction.followup.send(
+                        "🚫 You can't use this command in this channel.", ephemeral=True
+                    )
+                return
+
+        elif self.MODE == "prod":
+            if interaction.channel_id != self.PROD_CHANNEL_ID:
+                await interaction.followup.send(
+                    "🚫 You can't use this command in this channel.", ephemeral=True
+                )
+                return
+
+        # EMBED CONSTRUCTION
         embed = discord.Embed(
             title="📌 New Epic Request",
             color=discord.Color.purple()
@@ -36,18 +62,18 @@ class EpicRequest(commands.Cog):
         embed.add_field(name="Description", value=description, inline=False)
         embed.add_field(name="Goal", value=goal, inline=False)
 
-        if assignee:
-            embed.add_field(name="Assignee", value=assignee.mention, inline=False)
-        else:
-            embed.add_field(name="Assignee", value="(Unassigned)", inline=False)
+        embed.add_field(
+            name="Assignee",
+            value=assignee.mention if assignee else "(Unassigned)",
+            inline=False
+        )
 
         embed.set_footer(text="Use this to create a high-level Epic in Jira.")
         await interaction.followup.send(embed=embed)
 
     async def cog_load(self):
-        GUILD_ID = int(os.getenv("GUILD_ID"))
-        print("📦 Registering /epic-request to GUILD_ID:", GUILD_ID)
-        self.bot.tree.add_command(self.epic_request, guild=discord.Object(id=GUILD_ID))
+        print("📦 Registering /epic-request to GUILD_ID:", self.GUILD_ID)
+        self.bot.tree.add_command(self.epic_request, guild=discord.Object(id=self.GUILD_ID))
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(EpicRequest(bot))
