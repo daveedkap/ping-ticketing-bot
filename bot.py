@@ -29,7 +29,7 @@ async def on_ready():
     guild=discord.Object(id=GUILD_ID)
 )
 @app_commands.describe(
-    assignee="Tag a user to assign",
+    assignee="(Optional) Tag a user to assign",
     description="2+ sentence description of the task, the more detail the better",
     story_point_estimate="Estimated story points (must be > 0)",
     epic="(Optional) Epic/Parent ticket ID (e.g. PSB-57)",
@@ -51,12 +51,12 @@ async def on_ready():
 )
 async def ticket_request(
     interaction: discord.Interaction,
-    assignee: discord.Member,
     description: str,
     story_point_estimate: float,
     priority: app_commands.Choice[str],
     location: app_commands.Choice[str],
-    epic: str = None  # Optional
+    assignee: discord.Member = None,
+    epic: str = None 
 ):
     # Validate story point
     if story_point_estimate <= 0:
@@ -77,7 +77,13 @@ async def ticket_request(
         title="📝 New Ticket Request",
         color=discord.Color.blue()
     )
-    embed.add_field(name="Assignee", value=assignee.mention, inline=False)
+
+    # Handle optional assignee
+    if assignee:
+        embed.add_field(name="Assignee", value=assignee.mention, inline=False)
+    else:
+        embed.add_field(name="Assignee", value="(Unassigned)", inline=False)
+
     embed.add_field(name="Priority", value=priority.value, inline=False)
     embed.add_field(name="Description", value=description, inline=False)
     embed.add_field(name="Story Points", value=str(story_point_estimate), inline=False)
