@@ -34,7 +34,8 @@ async def on_ready():
     story_point_estimate="Estimated story points (must be > 0)",
     epic="(Optional) Epic/Parent ticket ID (e.g. PSB-57)",
     priority="Select a priority level",
-    location="Where should this ticket go?"
+    location="Where should this ticket go?",
+    work_type="(Optional) Choose the work type (defaults to Task)"
 )
 @app_commands.choices(
     priority=[
@@ -47,6 +48,11 @@ async def on_ready():
     location=[
         app_commands.Choice(name="Backlog", value="Backlog"),
         app_commands.Choice(name="Current Sprint", value="Current Sprint"),
+    ],
+    work_type=[
+        app_commands.Choice(name="Bug", value="Bug"),
+        app_commands.Choice(name="Story", value="Story"),
+        app_commands.Choice(name="Task", value="Task"),
     ]
 )
 async def ticket_request(
@@ -56,7 +62,8 @@ async def ticket_request(
     priority: app_commands.Choice[str],
     location: app_commands.Choice[str],
     assignee: discord.Member = None,
-    epic: str = None 
+    epic: str = None,
+    work_type: app_commands.Choice[str] = None  # ✅ Optional
 ):
     # Validate story point
     if story_point_estimate <= 0:
@@ -72,13 +79,15 @@ async def ticket_request(
         )
         return
 
+    # Default work_type if not provided
+    work_type_value = work_type.value if work_type else "Task"
+
     # Build embedded ticket summary
     embed = discord.Embed(
         title="📝 New Ticket Request",
         color=discord.Color.blue()
     )
 
-    # Handle optional assignee
     if assignee:
         embed.add_field(name="Assignee", value=assignee.mention, inline=False)
     else:
@@ -91,6 +100,8 @@ async def ticket_request(
 
     if epic:
         embed.add_field(name="Epic", value=epic, inline=False)
+
+    embed.add_field(name="Work Type", value=work_type_value, inline=False)
 
     embed.set_footer(text="Use this to create a Jira ticket.")
     await interaction.response.send_message(embed=embed)
