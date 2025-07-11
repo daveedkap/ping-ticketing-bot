@@ -7,6 +7,8 @@ from discord.ext import commands
 class TicketRequest(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.TEST_CHANNEL_ID = int(os.getenv("TEST_CHANNEL_ID"))
+        self.PROD_CHANNEL_ID = int(os.getenv("PROD_CHANNEL_ID"))
 
     @app_commands.command(
         name="ticket-request",
@@ -51,6 +53,18 @@ class TicketRequest(commands.Cog):
         work_type: app_commands.Choice[str] = None
     ):
         await interaction.response.defer()
+
+        if interaction.channel_id != self.TEST_CHANNEL_ID:
+            if interaction.channel_id == self.PROD_CHANNEL_ID:
+                await interaction.followup.send(
+                    "⚠️ This is the **staging bot** for development only.\nPlease use the official `ping-ticketing-bot` for real ticket submissions in this channel.",
+                    ephemeral=True
+                )
+            else:
+                await interaction.followup.send(
+                    "🚫 You can't use this command in this channel.", ephemeral=True
+                )
+            return
 
         if story_point_estimate <= 0:
             await interaction.followup.send(
