@@ -42,7 +42,7 @@ class EpicRequest(commands.Cog):
             embed.add_field(name="Assignee", value="(Unassigned)", inline=False)
 
         embed.set_footer(text="Use this to create a high-level Epic in Jira.")
-        await interaction.followup.send(embed=embed)  # ✅ Final response
+        await interaction.followup.send(embed=embed)
 
     async def cog_load(self):
         GUILD_ID = int(os.getenv("GUILD_ID"))
