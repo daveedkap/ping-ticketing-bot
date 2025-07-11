@@ -126,4 +126,4 @@ Maintained by dkaplanskybrimmer@gmail.com
 
 ## 🪪 License
 
-MIT License
+This project is licensed under the [MIT License](LICENSE).
