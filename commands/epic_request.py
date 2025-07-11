@@ -28,9 +28,11 @@ class EpicRequest(commands.Cog):
         await interaction.response.defer()
 
         embed = discord.Embed(
-            title=f"📌 Epic: {title}",
+            title="📌 New Epic Request",
             color=discord.Color.purple()
         )
+
+        embed.add_field(name="Title", value=title, inline=False)
         embed.add_field(name="Description", value=description, inline=False)
         embed.add_field(name="Goal", value=goal, inline=False)
 
