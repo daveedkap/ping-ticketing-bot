@@ -24,6 +24,8 @@ class EpicRequest(commands.Cog):
         goal: str,
         assignee: discord.Member = None
     ):
+        await interaction.response.defer()
+
         embed = discord.Embed(
             title=f"📌 Epic: {title}",
             color=discord.Color.purple()
@@ -37,7 +39,7 @@ class EpicRequest(commands.Cog):
             embed.add_field(name="Assignee", value="(Unassigned)", inline=False)
 
         embed.set_footer(text="Use this to create a high-level Epic in Jira.")
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed)  # ✅ Final response
 
     async def cog_load(self):
         GUILD_ID = 1380979689375535235

@@ -49,14 +49,16 @@ class TicketRequest(commands.Cog):
         epic: str = None,
         work_type: app_commands.Choice[str] = None
     ):
+        await interaction.response.defer()
+
         if story_point_estimate <= 0:
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "❌ Story point estimate must be greater than 0.", ephemeral=True
             )
             return
 
         if epic and not re.fullmatch(r"[A-Z]{2,10}-\d+", epic):
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "❌ Epic format must be like PSB-57 (uppercase letters, dash, number).", ephemeral=True
             )
             return
@@ -79,7 +81,8 @@ class TicketRequest(commands.Cog):
 
         embed.add_field(name="Work Type", value=work_type_value, inline=False)
         embed.set_footer(text="Use this to create a Jira ticket.")
-        await interaction.response.send_message(embed=embed)
+
+        await interaction.followup.send(embed=embed) 
 
     async def cog_load(self):
         GUILD_ID = 1380979689375535235
