@@ -47,25 +47,17 @@ TEST_CHANNEL_ID=channel_id_for_testing
 PROD_CHANNEL_ID=channel_id_for_production
 ```
 
-If you're apart of the Ping team, reach out to David.
-
-To run the bot in test mode:
-
-```bash
-MODE=test python bot.py
-```
-
-Or create a script (e.g. `run_test.sh`) with:
-
-```bash
-#!/bin/bash
-MODE=test python bot.py
-```
+To run the bot in test mode use the start-test.sh script.
 
 Make it executable:
 
 ```bash
 chmod +x run_test.sh
+```
+
+Then run it, using:
+```
+./start-test.sh
 ```
 
 ---
@@ -98,27 +90,16 @@ Submit an epic with:
 
 ---
 
-## 🔐 Environment Variables
-
-| Variable         | Description                                  |
-|------------------|----------------------------------------------|
-| `MODE`           | Set to `test` or `prod`                      |
-| `DISCORD_TOKEN`  | Discord bot token                            |
-| `GUILD_ID`       | ID of your Discord server                    |
-| `TEST_CHANNEL_ID`| ID of the channel for testing (staging bot) |
-| `PROD_CHANNEL_ID`| ID of the channel for real usage            |
-
----
-
 ## 🧪 Testing Notes
 
-- The bot will **reject slash commands** from unauthorized channels depending on `MODE`.
 - Staging bot shows a warning if used in production channel.
 - Production bot only responds in `PROD_CHANNEL_ID`.
 
 ---
 
 ## ☁️ Deployment (Render.com)
+
+If apart of the Ping team don't worry about this section.
 
 - Create a new web service.
 - Set `Start Command` to:
@@ -136,26 +117,13 @@ MODE=prod python bot.py
 
 ---
 
-## 🧼 Good Practices
-
-- Add `__pycache__/` and `.env*` files to your `.gitignore`
-- Never commit real tokens or `.env` files
-
-```gitignore
-__pycache__/
-.env
-.env.test
-```
-
----
-
 ## 🙌 Credits
 
 Made with ❤️ by the Ping team.  
-Maintained by @your-discord-tag and collaborators.
+Maintained by dkaplanskybrimmer@gmail.com
 
 ---
 
 ## 🪪 License
 
-MIT License (or specify if different)
+MIT License
