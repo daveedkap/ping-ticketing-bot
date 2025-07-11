@@ -7,6 +7,8 @@ from discord.ext import commands
 class TicketRequest(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.MODE = os.getenv("MODE")
+        self.GUILD_ID = int(os.getenv("GUILD_ID"))
         self.TEST_CHANNEL_ID = int(os.getenv("TEST_CHANNEL_ID"))
         self.PROD_CHANNEL_ID = int(os.getenv("PROD_CHANNEL_ID"))
 
@@ -54,17 +56,25 @@ class TicketRequest(commands.Cog):
     ):
         await interaction.response.defer()
 
-        if interaction.channel_id != self.TEST_CHANNEL_ID:
-            if interaction.channel_id == self.PROD_CHANNEL_ID:
-                await interaction.followup.send(
-                    "⚠️ This is the **staging bot** for development only.\nPlease use the official `ping-ticketing-bot` for real ticket submissions in this channel.",
-                    ephemeral=True
-                )
-            else:
+        if self.MODE == "test":
+            if interaction.channel_id != self.TEST_CHANNEL_ID:
+                if interaction.channel_id == self.PROD_CHANNEL_ID:
+                    await interaction.followup.send(
+                        "⚠️ This is the **staging bot** for development only.\nPlease use the official `ping-ticketing-bot` for real ticket submissions in this channel.",
+                        ephemeral=True
+                    )
+                else:
+                    await interaction.followup.send(
+                        "🚫 You can't use this command in this channel.", ephemeral=True
+                    )
+                return
+
+        elif self.MODE == "prod":
+            if interaction.channel_id != self.PROD_CHANNEL_ID:
                 await interaction.followup.send(
                     "🚫 You can't use this command in this channel.", ephemeral=True
                 )
-            return
+                return
 
         if story_point_estimate <= 0:
             await interaction.followup.send(
@@ -100,9 +110,8 @@ class TicketRequest(commands.Cog):
         await interaction.followup.send(embed=embed) 
 
     async def cog_load(self):
-        GUILD_ID = int(os.getenv("GUILD_ID"))
-        print("📦 Registering /ticket-request to GUILD_ID:", GUILD_ID)
-        self.bot.tree.add_command(self.ticket_request, guild=discord.Object(id=GUILD_ID))
+        print("📦 Registering /ticket-request to GUILD_ID:", self.GUILD_ID)
+        self.bot.tree.add_command(self.ticket_request, guild=discord.Object(id=self.GUILD_ID))
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(TicketRequest(bot))
