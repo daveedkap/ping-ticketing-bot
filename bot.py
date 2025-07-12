@@ -11,6 +11,18 @@ load_dotenv(dotenv_path=f".env.{MODE}")
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 GUILD_ID = int(os.getenv("GUILD_ID"))
 
+if not TOKEN:
+    raise ValueError("❌ DISCORD_BOT_TOKEN is not set. Check your .env file.")
+if not GUILD_ID:
+    raise ValueError("❌ GUILD_ID is not set. Check your .env file.")
+if MODE not in ["test", "prod"]:
+    raise ValueError("❌ MODE must be either 'test' or 'prod'. Check your .env file.")
+if MODE == "test" or MODE == "prod":
+    TEST_CHANNEL_ID = int(os.getenv("TEST_CHANNEL_ID"))
+    PROD_CHANNEL_ID = int(os.getenv("PROD_CHANNEL_ID"))
+    if not TEST_CHANNEL_ID or not PROD_CHANNEL_ID:
+        raise ValueError("❌ TEST_CHANNEL_ID and PROD_CHANNEL_ID must be set in test mode. Check your .env file.")
+
 print(f"🔥 Starting bot in {MODE.upper()} mode...")
 
 # Discord bot setup

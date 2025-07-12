@@ -54,13 +54,24 @@ class TicketRequest(commands.Cog):
         epic: str = None,
         work_type: app_commands.Choice[str] = None
     ):
-        await interaction.response.defer()
+        try:
+            await interaction.response.defer()
+        except discord.NotFound:
+            print("⚠️ Interaction expired or bot still starting up.")
+            try:
+                await interaction.followup.send(
+                    "⚠️ Bot is still waking up from sleep. Please try again in a few seconds!",
+                    ephemeral=True
+                )
+            except Exception:
+                pass  # In case followup isn't available either
+            return
 
         if self.MODE == "test":
             if interaction.channel_id != self.TEST_CHANNEL_ID:
                 if interaction.channel_id == self.PROD_CHANNEL_ID:
                     await interaction.followup.send(
-                        "⚠️ This is the **staging bot** for development only.\nPlease use the official `ping-ticketing-bot` for real ticket submissions in this channel.",
+                        "⚠️ This is the **development bot** for development only.\nPlease use the official `ping-ticketing-bot` for real ticket submissions in this channel.",
                         ephemeral=True
                     )
                 else:
