@@ -126,4 +126,4 @@ Maintained by dkaplanskybrimmer@gmail.com
 
 ## 🪪 License
 
-This project is licensed under the [MIT License](https://github.com/daveedkap/ping-ticketing-bot/tree/main?tab=MIT-1-ov-file).
+This project is licensed under the [MIT License](LICENSE).
